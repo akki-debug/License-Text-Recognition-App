@@ -41,7 +41,8 @@ if uploaded_file:
     st.write(df.head())
 
     # Preprocess the text data
-    df['clean_text'] = df['text'].apply(preprocess_text)
+    
+    df['clean_text'] = df['License Text'].apply(preprocess_text)
     
     # Split dataset
     X = df['clean_text']
