@@ -35,19 +35,14 @@ st.write("""
 df = pd.read_csv('license_data.csv')
 
 # Use columns to structure the layout
-col1, col2 = st.columns([2, 1])
+st.subheader("🔍 Dataset Preview")
+st.dataframe(df, height=500)  # Display a larger scrollable dataset preview
 
-with col1:
-    # Display dataset preview
-    st.subheader("🔍 Dataset Preview")
-    st.dataframe(df, height=200)  # Display a scrollable dataset preview
+# Model selection
+st.subheader("⚙️ Model Selection")
+model_choice = st.selectbox("Choose a classification model:", 
+                            ("Naive Bayes", "Random Forest", "SVM"))
 
-with col2:
-    # Model selection
-    st.subheader("⚙️ Model Selection")
-    model_choice = st.selectbox("Choose a classification model:", 
-                                ("Naive Bayes", "Random Forest", "SVM"))
-    
 # Preprocess the text data
 df['clean_text'] = df['License Text'].apply(preprocess_text)
 
@@ -118,7 +113,7 @@ if st.button("🔍 Classify License"):
 st.markdown("""
     ---
     📝 **Instructions**: 
-    1. Upload or view the dataset in the Dataset Preview.
+    1. View the dataset preview above.
     2. Choose a model for training and evaluation.
     3. Enter license text in the text area and press **Classify License**.
 """)
