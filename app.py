@@ -74,6 +74,8 @@ elif model_choice == "Gradient Boosting":
     model = GradientBoostingClassifier()
 elif model_choice == "XGBoost":
     model = XGBClassifier(eval_metric='mlogloss')
+    X_train_vec = X_train_vec.toarray()  # Convert sparse matrix to dense
+    X_test_vec = X_test_vec.toarray()    # Convert sparse matrix to dense
 elif model_choice == "LightGBM":
     model = lgb.LGBMClassifier()
 
