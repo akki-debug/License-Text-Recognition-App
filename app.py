@@ -36,9 +36,10 @@ if uploaded_file:
     # Load dataset
     df = pd.read_csv(uploaded_file)
     
-    # Display dataset
+  
+    # Display more rows from the dataset
     st.subheader("Dataset Preview")
-    st.write(df.head())
+    st.dataframe(df)  # This will display the entire dataset with scrolling
 
     # Preprocess the text data
     
