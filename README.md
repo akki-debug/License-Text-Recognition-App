@@ -1,1 +1,1 @@
-https://license-text-recognition-app.streamlit.app/
+https://license-text-recognition-update1.streamlit.app/
