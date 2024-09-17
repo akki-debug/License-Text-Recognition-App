@@ -46,7 +46,7 @@ if uploaded_file:
     
     # Split dataset
     X = df['clean_text']
-    y = df['label']
+    y = df['Label']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
     
     # Vectorization using TF-IDF
