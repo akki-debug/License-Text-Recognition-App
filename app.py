@@ -3,8 +3,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
+import lightgbm as lgb
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import string
 import nltk
@@ -41,7 +44,9 @@ st.dataframe(df, height=500)  # Display a larger scrollable dataset preview
 # Model selection
 st.subheader("⚙️ Model Selection")
 model_choice = st.selectbox("Choose a classification model:", 
-                            ("Naive Bayes", "Random Forest", "SVM"))
+                            ("Naive Bayes", "Random Forest", "SVM", 
+                             "Logistic Regression", "Gradient Boosting", 
+                             "XGBoost", "LightGBM"))
 
 # Preprocess the text data
 df['clean_text'] = df['License Text'].apply(preprocess_text)
@@ -63,6 +68,14 @@ elif model_choice == "Random Forest":
     model = RandomForestClassifier()
 elif model_choice == "SVM":
     model = SVC()
+elif model_choice == "Logistic Regression":
+    model = LogisticRegression(max_iter=1000)
+elif model_choice == "Gradient Boosting":
+    model = GradientBoostingClassifier()
+elif model_choice == "XGBoost":
+    model = XGBClassifier(eval_metric='mlogloss')
+elif model_choice == "LightGBM":
+    model = lgb.LGBMClassifier()
 
 # Add a progress spinner during model training
 with st.spinner("Training the model..."):
