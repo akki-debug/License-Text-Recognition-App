@@ -26,18 +26,28 @@ def preprocess_text(text):
     return ' '.join(tokens)
 
 # App title and description
-st.title("License Text Recognition and Classification")
+st.title("📝 License Text Recognition and Classification")
 st.write("""
-    This app classifies open-source license texts (e.g., MIT, GPL) using machine learning techniques.
-    """)
+    **This app classifies open-source license texts (e.g., MIT, GPL) using machine learning techniques.**
+""")
 
 # Load predefined dataset
 df = pd.read_csv('license_data.csv')
 
-# Display dataset preview
-st.subheader("Dataset Preview")
-st.dataframe(df)  # Display the entire dataset with scrolling
+# Use columns to structure the layout
+col1, col2 = st.columns([2, 1])
 
+with col1:
+    # Display dataset preview
+    st.subheader("🔍 Dataset Preview")
+    st.dataframe(df, height=200)  # Display a scrollable dataset preview
+
+with col2:
+    # Model selection
+    st.subheader("⚙️ Model Selection")
+    model_choice = st.selectbox("Choose a classification model:", 
+                                ("Naive Bayes", "Random Forest", "SVM"))
+    
 # Preprocess the text data
 df['clean_text'] = df['License Text'].apply(preprocess_text)
 
@@ -51,9 +61,7 @@ vectorizer = TfidfVectorizer()
 X_train_vec = vectorizer.fit_transform(X_train)
 X_test_vec = vectorizer.transform(X_test)
 
-# Model selection
-model_choice = st.selectbox("Choose a classification model", ("Naive Bayes", "Random Forest", "SVM"))
-
+# Model selection logic
 if model_choice == "Naive Bayes":
     model = MultinomialNB()
 elif model_choice == "Random Forest":
@@ -61,8 +69,9 @@ elif model_choice == "Random Forest":
 elif model_choice == "SVM":
     model = SVC()
 
-# Train the model
-model.fit(X_train_vec, y_train)
+# Add a progress spinner during model training
+with st.spinner("Training the model..."):
+    model.fit(X_train_vec, y_train)
 
 # Predict on the test set
 y_pred = model.predict(X_test_vec)
@@ -73,23 +82,43 @@ precision = precision_score(y_test, y_pred, average='weighted')
 recall = recall_score(y_test, y_pred, average='weighted')
 f1 = f1_score(y_test, y_pred, average='weighted')
 
-# Display evaluation results
-st.subheader("Model Evaluation")
-st.write(f"Accuracy: {accuracy:.2f}%")
-st.write(f"Precision: {precision:.4f}")
-st.write(f"Recall: {recall:.4f}")
-st.write(f"F1 Score: {f1:.4f}")
+# Display evaluation results with enhanced UI
+st.subheader("📊 Model Evaluation")
+st.markdown(f"""
+    **Accuracy**: `{accuracy:.2f}%`
+    
+    **Precision**: `{precision:.4f}`
+    
+    **Recall**: `{recall:.4f}`
+    
+    **F1 Score**: `{f1:.4f}`
+""", unsafe_allow_html=True)
 
 # Make predictions on new text input
-st.subheader("Test License Classification")
-user_input = st.text_area("Enter license text for classification:")
+st.subheader("🧪 Test License Classification")
+user_input = st.text_area("Enter license text for classification:", height=150)
 
 # Add a button to trigger the prediction
-if st.button("Classify License"):
+if st.button("🔍 Classify License"):
     if user_input:
         clean_input = preprocess_text(user_input)
         input_vec = vectorizer.transform([clean_input])
         prediction = model.predict(input_vec)
-        st.write(f"Predicted License Type: {prediction[0]}")
+        
+        # Show the result with a colored markdown
+        st.markdown(f"""
+            <div style="background-color:#f0f4f7; padding: 10px; border-radius: 5px;">
+            <h3 style="color: #4CAF50;">Predicted License Type: {prediction[0]}</h3>
+            </div>
+            """, unsafe_allow_html=True)
     else:
-        st.write("Please enter license text to classify.")
+        st.error("Please enter license text to classify.")
+
+# Footer with instructions
+st.markdown("""
+    ---
+    📝 **Instructions**: 
+    1. Upload or view the dataset in the Dataset Preview.
+    2. Choose a model for training and evaluation.
+    3. Enter license text in the text area and press **Classify License**.
+""")
