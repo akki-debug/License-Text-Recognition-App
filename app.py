@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 import lightgbm as lgb
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.preprocessing import LabelEncoder
 import string
 import nltk
 from nltk.corpus import stopwords
@@ -41,15 +42,12 @@ df = pd.read_csv('license_data.csv')
 st.subheader("🔍 Dataset Preview")
 st.dataframe(df, height=500)  # Display a larger scrollable dataset preview
 
-# Model selection
-st.subheader("⚙️ Model Selection")
-model_choice = st.selectbox("Choose a classification model:", 
-                            ("Naive Bayes", "Random Forest", "SVM", 
-                             "Logistic Regression", "Gradient Boosting", 
-                             "XGBoost", "LightGBM"))
-
 # Preprocess the text data
 df['clean_text'] = df['License Text'].apply(preprocess_text)
+
+# Convert string labels to numerical labels
+label_encoder = LabelEncoder()
+df['Label'] = label_encoder.fit_transform(df['Label'])
 
 # Split dataset
 X = df['clean_text']
@@ -60,6 +58,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 vectorizer = TfidfVectorizer()
 X_train_vec = vectorizer.fit_transform(X_train)
 X_test_vec = vectorizer.transform(X_test)
+
+# Model selection
+st.subheader("⚙️ Model Selection")
+model_choice = st.selectbox("Choose a classification model:", 
+                            ("Naive Bayes", "Random Forest", "SVM", 
+                             "Logistic Regression", "Gradient Boosting", 
+                             "XGBoost", "LightGBM"))
 
 # Model selection logic
 if model_choice == "Naive Bayes":
@@ -90,11 +95,15 @@ except ValueError as e:
 # Predict on the test set
 y_pred = model.predict(X_test_vec)
 
+# Convert numerical labels back to original string labels for display
+y_test_labels = label_encoder.inverse_transform(y_test)
+y_pred_labels = label_encoder.inverse_transform(y_pred)
+
 # Evaluation metrics
-accuracy = accuracy_score(y_test, y_pred) * 100  # Convert accuracy to percentage
-precision = precision_score(y_test, y_pred, average='weighted')
-recall = recall_score(y_test, y_pred, average='weighted')
-f1 = f1_score(y_test, y_pred, average='weighted')
+accuracy = accuracy_score(y_test_labels, y_pred_labels) * 100  # Convert accuracy to percentage
+precision = precision_score(y_test_labels, y_pred_labels, average='weighted')
+recall = recall_score(y_test_labels, y_pred_labels, average='weighted')
+f1 = f1_score(y_test_labels, y_pred_labels, average='weighted')
 
 # Display evaluation results with enhanced UI
 st.subheader("📊 Model Evaluation")
@@ -118,11 +127,12 @@ if st.button("🔍 Classify License"):
         clean_input = preprocess_text(user_input)
         input_vec = vectorizer.transform([clean_input])
         prediction = model.predict(input_vec)
+        prediction_label = label_encoder.inverse_transform(prediction)
         
         # Show the result with a colored markdown
         st.markdown(f"""
             <div style="background-color:#f0f4f7; padding: 10px; border-radius: 5px;">
-            <h3 style="color: #4CAF50;">Predicted License Type: {prediction[0]}</h3>
+            <h3 style="color: #4CAF50;">Predicted License Type: {prediction_label[0]}</h3>
             </div>
             """, unsafe_allow_html=True)
     else:
