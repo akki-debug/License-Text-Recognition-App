@@ -84,8 +84,12 @@ st.write(f"F1 Score: {f1:.4f}")
 st.subheader("Test License Classification")
 user_input = st.text_area("Enter license text for classification:")
 
-if user_input:
-    clean_input = preprocess_text(user_input)
-    input_vec = vectorizer.transform([clean_input])
-    prediction = model.predict(input_vec)
-    st.write(f"Predicted License Type: {prediction[0]}")
+# Add a button to trigger the prediction
+if st.button("Classify License"):
+    if user_input:
+        clean_input = preprocess_text(user_input)
+        input_vec = vectorizer.transform([clean_input])
+        prediction = model.predict(input_vec)
+        st.write(f"Predicted License Type: {prediction[0]}")
+    else:
+        st.write("Please enter license text to classify.")
