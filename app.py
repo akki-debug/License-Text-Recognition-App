@@ -34,16 +34,16 @@ st.write("""
 # Load predefined dataset
 df = pd.read_csv('license_data.csv')
 
-# Display more rows from the dataset
+# Display dataset preview
 st.subheader("Dataset Preview")
-st.dataframe(df)  # This will display the entire dataset with scrolling
+st.dataframe(df)  # Display the entire dataset with scrolling
 
 # Preprocess the text data
-df['clean_text'] = df['text'].apply(preprocess_text)
+df['clean_text'] = df['License Text'].apply(preprocess_text)
 
 # Split dataset
 X = df['clean_text']
-y = df['label']
+y = df['Label']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Vectorization using TF-IDF
