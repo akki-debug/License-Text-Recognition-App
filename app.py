@@ -80,8 +80,12 @@ elif model_choice == "LightGBM":
     model = lgb.LGBMClassifier()
 
 # Add a progress spinner during model training
-with st.spinner("Training the model..."):
-    model.fit(X_train_vec, y_train)
+try:
+    with st.spinner("Training the model..."):
+        model.fit(X_train_vec, y_train)
+except ValueError as e:
+    st.error(f"ValueError: {str(e)}")
+    st.stop()  # Stop execution to prevent further errors
 
 # Predict on the test set
 y_pred = model.predict(X_test_vec)
