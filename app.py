@@ -68,14 +68,14 @@ model.fit(X_train_vec, y_train)
 y_pred = model.predict(X_test_vec)
 
 # Evaluation metrics
-accuracy = accuracy_score(y_test, y_pred)
+accuracy = accuracy_score(y_test, y_pred) * 100  # Convert accuracy to percentage
 precision = precision_score(y_test, y_pred, average='weighted')
 recall = recall_score(y_test, y_pred, average='weighted')
 f1 = f1_score(y_test, y_pred, average='weighted')
 
 # Display evaluation results
 st.subheader("Model Evaluation")
-st.write(f"Accuracy: {accuracy:.4f}")
+st.write(f"Accuracy: {accuracy:.2f}%")
 st.write(f"Precision: {precision:.4f}")
 st.write(f"Recall: {recall:.4f}")
 st.write(f"F1 Score: {f1:.4f}")
