@@ -29,16 +29,14 @@ def preprocess_text(text):
     tokens = [word for word in tokens if word not in stopwords.words('english')]
     return ' '.join(tokens)
 
-# App title and description
 st.title("📝 License Text Recognition and Classification")
 st.write("""
     **This app classifies open-source license texts (e.g., MIT, GPL) using machine learning techniques.**
 """)
 
-# Load predefined dataset
+
 df = pd.read_csv('license_data.csv')
 
-# Use columns to structure the layout
 st.subheader("🔍 Dataset Preview")
 st.dataframe(df, height=500)  # Display a larger scrollable dataset preview
 
@@ -66,7 +64,6 @@ model_choice = st.selectbox("Choose a classification model:",
                              "Logistic Regression", "Gradient Boosting", 
                              "XGBoost", "LightGBM"))
 
-# Model selection logic
 if model_choice == "Naive Bayes":
     model = MultinomialNB()
 elif model_choice == "Random Forest":
@@ -84,28 +81,25 @@ elif model_choice == "XGBoost":
 elif model_choice == "LightGBM":
     model = lgb.LGBMClassifier()
 
-# Add a progress spinner during model training
 try:
     with st.spinner("Training the model..."):
         model.fit(X_train_vec, y_train)
 except ValueError as e:
     st.error(f"ValueError: {str(e)}")
-    st.stop()  # Stop execution to prevent further errors
+    st.stop() 
 
-# Predict on the test set
+
 y_pred = model.predict(X_test_vec)
 
-# Convert numerical labels back to original string labels for display
+
 y_test_labels = label_encoder.inverse_transform(y_test)
 y_pred_labels = label_encoder.inverse_transform(y_pred)
 
-# Evaluation metrics
-accuracy = accuracy_score(y_test_labels, y_pred_labels) * 100  # Convert accuracy to percentage
+accuracy = accuracy_score(y_test_labels, y_pred_labels) * 100 
 precision = precision_score(y_test_labels, y_pred_labels, average='weighted')
 recall = recall_score(y_test_labels, y_pred_labels, average='weighted')
 f1 = f1_score(y_test_labels, y_pred_labels, average='weighted')
 
-# Display evaluation results with enhanced UI
 st.subheader("📊 Model Evaluation")
 st.markdown(f"""
     **Accuracy**: `{accuracy:.2f}%`
@@ -117,11 +111,9 @@ st.markdown(f"""
     **F1 Score**: `{f1:.4f}`
 """, unsafe_allow_html=True)
 
-# Make predictions on new text input
 st.subheader("🧪 Test License Classification")
 user_input = st.text_area("Enter license text for classification:", height=150)
 
-# Add a button to trigger the prediction
 if st.button("🔍 Classify License"):
     if user_input:
         clean_input = preprocess_text(user_input)
@@ -129,7 +121,7 @@ if st.button("🔍 Classify License"):
         prediction = model.predict(input_vec)
         prediction_label = label_encoder.inverse_transform(prediction)
         
-        # Show the result with a colored markdown
+    
         st.markdown(f"""
             <div style="background-color:#f0f4f7; padding: 10px; border-radius: 5px;">
             <h3 style="color: #4CAF50;">Predicted License Type: {prediction_label[0]}</h3>
@@ -138,7 +130,6 @@ if st.button("🔍 Classify License"):
     else:
         st.error("Please enter license text to classify.")
 
-# Footer with instructions
 st.markdown("""
     ---
     📝 **Instructions**: 
